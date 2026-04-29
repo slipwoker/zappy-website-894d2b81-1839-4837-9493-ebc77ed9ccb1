@@ -1,0 +1,79 @@
+# Business — Generative Engine Optimization Map
+
+---
+
+## Pages
+
+### בית
+https://example.com
+אלונה פוטו מציגה צילום מקצועי שמספר סיפור. צלמת מקצועית לאירועים בישראל עם עין אמנותית ייחודית. גלי עולם של רגשות דרך עדשה שלא מפספסת דבר.
+
+### גישה לארכיון
+https://example.com/archive-access
+כנסי לתאריך הצילום שלך וגלי את כל התמונות המעובדות באיכות מלאה. גישה מאובטחת לארכיון האישי שלך — כי כל רגע שצולם שווה להיות נשמר בכבוד.
+
+### תיק עבודות
+https://example.com/portfolio
+תיק העבודות של אלונה פוטו חושף צילום חתונות מקצועי, אירועים ובלוגרי אופנה במיטבם. כל תמונה היא יצירת אמנות — גלי למה לקוחות בוחרים בנו שוב ושוב.
+
+### צור קשר
+https://example.com/contact
+רוצה לתאם צילום מקצועי לאירוע, חתונה או שיתוף פעולה עם משפיענים? צרי קשר עם אלונה פוטו עוד היום ונבנה יחד את הסיפור החזותי שתמיד חלמת עליו.
+
+### Products
+https://example.com/products
+המוצרים שלנו - ALONA PHOTO
+
+### Cart
+https://example.com/cart
+עגלת הקניות שלך
+
+### Checkout
+https://example.com/checkout
+תשלום
+
+### Login
+https://example.com/login
+התחברות לקוחות
+
+### Account
+https://example.com/account
+החשבון שלי
+
+### Order Success
+https://example.com/order-success
+תודה על ההזמנה
+
+### Product Detail
+https://example.com/product/:slug
+פרטי המוצר - ALONA PHOTO
+
+### Category
+https://example.com/category/:slug
+מוצרים - ALONA PHOTO
+
+## Legal & Policy
+
+### Privacy Policy
+https://example.com/privacy
+Information about how user data is collected, stored, and protected.
+
+### Terms & Conditions
+https://example.com/terms
+Legal terms describing service usage, rights, and policies.
+
+### Accessibility Statement
+https://example.com/accessibility
+Information about WCAG compliance and accessibility features.
+
+---
+
+# Business Context (for LLM understanding)
+
+## About Business
+---
+
+# Additional Resources
+
+- **Sitemap**: https://example.com/sitemap.xml
+- **Robots.txt**: https://example.com/robots.txt

@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>הארכיון שלך מחכה לך — ALONA PHOTO</title>
+    <meta name="description" content="כנסי לתאריך הצילום שלך וגלי את כל התמונות המעובדות באיכות מלאה. גישה מאובטחת לארכיון האישי שלך — כי כל רגע שצולם שווה להיות נשמר בכבוד.">
+    <meta name="keywords" content="גישה לארכיון תמונות, צפייה בתמונות מקצועיות, ארכיון צילום מאובטח, ALONA PHOTO צלמת">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: '894d2b81-1839-4837-9493-ebc77ed9ccb1',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="הארכיון שלך מחכה לך — ALONA PHOTO">
+    <meta property="og:description" content="כנסי לתאריך הצילום שלך וגלי את כל התמונות המעובדות באיכות מלאה. גישה מאובטחת לארכיון האישי שלך — כי כל רגע שצולם שווה להיות נשמר בכבוד.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="הארכיון שלך מחכה לך — ALONA PHOTO">
+    <meta name="twitter:description" content="כנסי לתאריך הצילום שלך וגלי את כל התמונות המעובדות באיכות מלאה. גישה מאובטחת לארכיון האישי שלך — כי כל רגע שצולם שווה להיות נשמר בכבוד.">
+    <meta property="og:type" content="website">
+  <meta property="og:locale" content="he_IL">
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: var(--text-dark, #333) !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+      [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 10px !important; padding-right: 28px !important; }
+      .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus (exclude catalog sub-menus that use <a> children instead of <li>) */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))):not(:has(> a)), .sub-menu:not(:has(li)):not(:has(> a)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .navbar .sub-menu.mobile-expanded, .nav-menu .sub-menu.mobile-expanded, #navMenu .sub-menu.mobile-expanded { max-height: none !important; overflow-y: visible !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-dark) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-dark) !important; white-space: normal !important; }
+        .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+        [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 0 !important; padding-right: 28px !important; }
+        .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+        .nav-menu.active, #navMenu.active { max-width: 100vw !important; overflow-x: hidden !important; box-sizing: border-box !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-dark) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="mobile-lang-menu-deployed-css">
+    @media (max-width: 768px) {
+      .lang-switcher,
+      .nav-cta-container .lang-switcher,
+      .nav-container .lang-switcher,
+      .navbar .lang-switcher,
+      .navbar .nav-cta-container .lang-switcher,
+      .nav-icons-left .lang-switcher,
+      .nav-ecommerce-icons .lang-switcher { display: none !important; }
+      .mobile-lang-menu { width: 100%; border-top: 1px solid rgba(128,128,128,0.2); padding: 8px 0 0 0; margin-top: 8px; }
+      .mobile-lang-toggle { display: flex !important; align-items: center; justify-content: space-between; width: 100%; padding: 12px 16px; background: none; border: none; cursor: pointer; font-size: 15px; color: inherit; font-family: inherit; }
+      .mobile-lang-toggle::after { content: ''; display: inline-block; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.3s ease; margin-left: 8px; }
+      .mobile-lang-toggle.expanded::after { transform: rotate(-135deg); }
+      .mobile-lang-options { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+      .mobile-lang-options.expanded { max-height: 300px; }
+      .mobile-lang-option { display: flex !important; align-items: center; gap: 10px; padding: 10px 24px; text-decoration: none; color: inherit; font-size: 14px; font-family: inherit; }
+      .mobile-lang-option:hover { background: rgba(128,128,128,0.1); }
+      .mobile-lang-option.active { font-weight: 600; opacity: 0.7; pointer-events: none; }
+      .mobile-lang-option img { width: 20px; height: 20px; border-radius: 50%; }
+    }
+    @media (min-width: 769px) {
+      .mobile-lang-menu { display: none !important; }
+    }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      #mic-access-tool-general-button, .mic-access-tool-general-button,
+      #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+      ._access-icon, #mic-access-tool-box, .mic-access-tool-box,
+      #mic-init-access-tool #mic-access-tool-box, div[id*="mic-access-tool-box"], ._access-menu {
+        display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
+      }
+    </style>
+</head>
+<body>
+
+
+    <div class="mobile-search-panel" id="mobile-search-panel">
+      <div class="search-wrapper">
+        <input type="text" id="mobile-search-input" placeholder="חיפוש מוצרים..." autocomplete="off">
+        <button class="search-submit" id="mobile-search-submit" title="חיפוש">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+        </button>
+        <button class="close-search" id="close-mobile-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="search-results" id="mobile-search-results"></div>
+    </div>
+  
+<script>window.ZAPPY_WEBSITE_ID = "894d2b81-1839-4837-9493-ebc77ed9ccb1";window.ZAPPY_API_BASE = (window.location.pathname.includes('/preview') ? "https://api.zappy5.com" : "https://api.zappy5.com");</script>
+  <nav class="navbar" dir="rtl">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display: none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+
+  <button class="phone-header-btn" data-phone="[business_phone]" aria-label="Call">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+
+  <div class="nav-container">
+    <div class="nav-right-group"><div class="nav-brand">
+      <a href="/" class="logo-link">
+        <img src="/assets/alona-photo-general-logo.webp" alt="ALONA PHOTO" class="logo">
+      </a>
+    </div><ul class="nav-menu" id="navMenu">
+
+    <li class="menu-item-has-children zappy-products-dropdown">
+      <a href="/products">
+        מוצרים
+        <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6"></path>
+        </svg>
+      </a>
+      <ul class="sub-menu" id="zappy-nav-category-links">
+        <li><a href="/products">כל המוצרים</a></li>
+        <!-- Categories will be loaded dynamically -->
+      </ul>
+    </li>
+  <li><a href="/archive-access">גישה לארכיון</a></li><li><a href="/portfolio">תיק עבודות</a></li><li><a href="/contact">צור קשר</a></li></ul><div class="nav-ecommerce-icons nav-icons-left"><a href="/login" class="login-link nav-login" title="התחברות"><svg class="login-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a><a href="#cart" class="cart-link nav-cart" id="cart-drawer-toggle" title="עגלת קניות"><svg class="cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span class="cart-count">0</span></a><div class="nav-search-box">
+    <input type="text" class="nav-search-input" id="nav-search-input" placeholder="חיפוש מוצרים..." autocomplete="off">
+    <button class="nav-search-btn" id="nav-search-btn" title="חיפוש">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+    </button>
+    <div class="nav-search-results" id="nav-search-results"></div>
+  </div></div><div class="nav-ecommerce-icons nav-icons-right"><button class="nav-search-toggle" id="mobile-search-toggle" title="חיפוש"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg></button></div></div>
+
+    
+
+    
+  </div>
+</nav>
+
+    <nav class="zappy-catalog-menu rtl" id="zappy-catalog-menu" dir="rtl" style="display:none">
+      <div class="catalog-menu-container">
+        <a href="/products" class="catalog-menu-item catalog-menu-all">כל המוצרים</a>
+        <div class="catalog-menu-categories" id="zappy-category-links">
+          <!-- Categories will be loaded dynamically -->
+        </div>
+      </div>
+    </nav>
+  
+<script>
+
+// Navbar Mobile Menu Toggle and Contrast Fix
+(function() {
+  // Use 'load' event instead of 'DOMContentLoaded' to ensure we run AFTER all other scripts
+  window.addEventListener('load', function() {
+    
+    // FIX MOBILE BUTTON CONTRAST
+    // Detect navbar background color and apply contrasting color to mobile buttons
+    const navbar = document.querySelector('.navbar, nav, header');
+    if (!navbar) {
+      console.log('[Navbar] Navbar element not found');
+      return;
+    }
+    
+    // DECLARE VARIABLES EARLY to avoid Temporal Dead Zone errors
+    // These are used in multiple places below
+    let mobileToggle = document.getElementById('mobileToggle') ||
+                       document.querySelector('.mobile-toggle') ||
+                       document.querySelector('.hamburger') ||
+                       document.querySelector('.hamburger-menu') ||
+                       document.querySelector('.menu-toggle') ||
+                       document.querySelector('.burger-menu') ||
+                       document.querySelector('[aria-label="Menu"]') ||
+                       document.querySelector('[aria-label="תפריט"]');
+    
+    const phoneBtn = document.querySelector('.phone-header-btn');
+    
+    const computedStyle = window.getComputedStyle(navbar);
+    let bgColor = computedStyle.backgroundColor;
+    
+    console.log('[Navbar] Initial navbar background:', bgColor);
+    
+    // Check if background is transparent or rgba with 0 alpha
+    const isTransparent = bgColor === 'transparent' || 
+                         bgColor === 'rgba(0, 0, 0, 0)' ||
+                         (bgColor.startsWith('rgba') && bgColor.includes(', 0)'));
+    
+    if (isTransparent) {
+      // Check for background-image or gradient
+      const bgImage = computedStyle.backgroundImage;
+      if (bgImage && bgImage !== 'none') {
+        console.log('[Navbar] Navbar has background image/gradient, using dark text');
+        bgColor = 'rgb(240, 240, 240)'; // Assume light background
+      } else {
+        // Transparent navbar - check body background
+        const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+        console.log('[Navbar] Navbar transparent, using body background:', bodyBg);
+        bgColor = bodyBg;
+      }
+    }
+    
+    // Calculate luminance to determine if background is light or dark
+    const rgb = bgColor.match(/\d+/g);
+    if (rgb && rgb.length >= 3) {
+      const r = parseInt(rgb[0]);
+      const g = parseInt(rgb[1]);
+      const b = parseInt(rgb[2]);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      
+      // Mobile button colors are set by Claude's AI-generated CSS (same as .nav-menu a)
+      // No dynamic color overrides needed - colors come from the generated navbar CSS
+      console.log('[Navbar] Mobile button colors preserved from Claude CSS (luminance:', luminance.toFixed(2) + ')');
+      
+      // FIX ICON SIZES - Ensure SVGs are properly sized and visible
+      // INJECT CRITICAL CSS TO OVERRIDE ANY CONFLICTING RULES
+      const criticalCSS = document.createElement('style');
+      criticalCSS.id = 'zappy-mobile-nav-fix';
+      const htmlLang = document.documentElement.lang || 'en';
+      const htmlDir = document.documentElement.dir || 'ltr';
+      // Check both dir attribute AND lang for RTL detection
+      // dir="rtl" is the most reliable indicator
+      const isRTL = htmlDir === 'rtl' || htmlLang === 'he' || htmlLang === 'ar';
+      
+      criticalCSS.textContent = `
+        /* Hide mobile buttons on desktop, show only on mobile */
+        @media (min-width: 769px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            display: none !important;
+          }
+        }
+        
+        /* Show and position mobile buttons correctly on mobile */
+        @media (max-width: 768px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            position: absolute !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 1001 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 6px !important;
+            background: none !important;
+            color: var(--nav-text, var(--text-dark)) !important;
+          }
+          
+          /* LTR positioning (default): hamburger LEFT, phone RIGHT */
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .mobile-toggle,
+          html[dir="ltr"] .mobile-toggle {
+            left: 12px !important;
+            right: auto !important;
+          }
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .phone-header-btn,
+          html[dir="ltr"] .phone-header-btn {
+            right: 12px !important;
+            left: auto !important;
+          }
+          
+          /* RTL positioning: hamburger RIGHT, phone LEFT */
+          html[dir="rtl"] .mobile-toggle,
+          html[lang="he"] .mobile-toggle,
+          html[lang="ar"] .mobile-toggle {
+            right: 12px !important;
+            left: auto !important;
+          }
+          html[dir="rtl"] .phone-header-btn,
+          html[lang="he"] .phone-header-btn,
+          html[lang="ar"] .phone-header-btn {
+            left: 12px !important;
+            right: auto !important;
+          }
+          
+          /* CRITICAL: Ensure nav-container has min-height on mobile */
+          /* All children are positioned absolutely/fixed on mobile, so height:auto collapses to 0 */
+          .nav-container {
+            min-height: 70px !important;
+            position: relative !important;
+          }
+          
+          /* Ensure SVG icons are properly sized and inherit color */
+          .mobile-toggle svg,
+          .phone-header-btn svg {
+            width: 24px !important;
+            height: 24px !important;
+            /* Don't force display - let JavaScript control hamburger/close toggle */
+          }
+          
+          /* Reset nav-cta-container on mobile - remove desktop box-shadow/padding */
+          /* that creates a visible ghost box when CTA button is hidden */
+          .nav-cta-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+          
+          /* Hide nav-cta-container entirely on mobile when there's no lang-switcher */
+          /* (only the CTA button is inside, and it's hidden on mobile) */
+          .nav-cta-container:not(:has(.lang-switcher)) {
+            display: none !important;
+          }
+          
+          /* CRITICAL: Prevent hero image fade gradient from bleeding over headline text */
+          /* The .image-fade-gradient has bottom: -30px (extends below parent) */
+          /* On mobile stacked layout, this overlaps the h1 text below the image */
+          .hero-image-column {
+            overflow: hidden !important;
+          }
+          .image-fade-gradient {
+            bottom: 0 !important;
+          }
+          
+          /* Hide desktop language switcher on mobile - hamburger menu handles it */
+          /* High specificity to override stored CSS */
+          .lang-switcher,
+          .nav-cta-container .lang-switcher,
+          .nav-container .lang-switcher,
+          .navbar .lang-switcher,
+          .navbar .nav-cta-container .lang-switcher {
+            display: none !important;
+          }
+        }
+      `;
+      
+      // Remove existing fix if present and inject new one
+      const existing = document.getElementById('zappy-mobile-nav-fix');
+      if (existing) existing.remove();
+      document.head.appendChild(criticalCSS);
+      
+      console.log('[Navbar] Critical CSS injected for mobile nav positioning');
+      
+      // ONLY apply inline positioning styles on mobile viewport
+      // On desktop, the CSS handles hiding these buttons with display: none
+      // Inline styles were breaking desktop layout by overriding CSS
+      const isMobileViewport = window.innerWidth <= 768;
+      
+      if (mobileToggle) {
+        // Icon sizing applies to all viewports for consistency
+        const hamburgerIcon = mobileToggle.querySelector('.hamburger-icon');
+        const closeIcon = mobileToggle.querySelector('.close-icon');
+        
+        if (hamburgerIcon) {
+          hamburgerIcon.style.setProperty('width', '24px', 'important');
+          hamburgerIcon.style.setProperty('height', '24px', 'important');
+          hamburgerIcon.style.setProperty('display', 'block', 'important'); // Show hamburger by default
+        }
+        if (closeIcon) {
+          closeIcon.style.setProperty('width', '24px', 'important');
+          closeIcon.style.setProperty('height', '24px', 'important');
+          closeIcon.style.setProperty('display', 'none', 'important'); // Hide close icon by default
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          mobileToggle.style.setProperty('position', 'absolute', 'important');
+          mobileToggle.style.setProperty('top', '50%', 'important');
+          mobileToggle.style.setProperty('transform', 'translateY(-50%)', 'important');
+          mobileToggle.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          
+          console.log('[Navbar] Mobile toggle positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          mobileToggle.style.removeProperty('position');
+          mobileToggle.style.removeProperty('top');
+          mobileToggle.style.removeProperty('transform');
+          mobileToggle.style.removeProperty('z-index');
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared mobile toggle inline positioning');
+        }
+      }
+      
+      if (phoneBtn) {
+        // Icon sizing applies to all viewports
+        const phoneIcon = phoneBtn.querySelector('svg');
+        if (phoneIcon) {
+          phoneIcon.style.width = '24px';
+          phoneIcon.style.height = '24px';
+          phoneIcon.setAttribute('width', '24');
+          phoneIcon.setAttribute('height', '24');
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          phoneBtn.style.setProperty('position', 'absolute', 'important');
+          phoneBtn.style.setProperty('top', '50%', 'important');
+          phoneBtn.style.setProperty('transform', 'translateY(-50%)', 'important');
+          phoneBtn.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          
+          console.log('[Navbar] Phone button positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          phoneBtn.style.removeProperty('position');
+          phoneBtn.style.removeProperty('top');
+          phoneBtn.style.removeProperty('transform');
+          phoneBtn.style.removeProperty('z-index');
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared phone button inline positioning');
+        }
+      }
+    } else {
+      console.log('[Navbar] Could not parse background color:', bgColor);
+    }
+    
+    // MOBILE MENU TOGGLE
+    // Re-query in case DOM changed (mobileToggle already declared at top of function)
+    mobileToggle = document.getElementById('mobileToggle') ||
+                   document.querySelector('.mobile-toggle') ||
+                   document.querySelector('.hamburger') ||
+                   document.querySelector('.hamburger-menu') ||
+                   document.querySelector('.menu-toggle') ||
+                   document.querySelector('.burger-menu') ||
+                   document.querySelector('[aria-label="Menu"]') ||
+                   document.querySelector('[aria-label="תפריט"]');
+    
+    // EXPANDED SEARCH: Find nav menu by ID or class
+    const navMenu = document.getElementById('navMenu') ||
+                  document.querySelector('.nav-menu') ||
+                  document.querySelector('.nav-links') ||
+                  document.querySelector('nav ul:not(.submenu)');
+    
+    if (!mobileToggle || !navMenu) {
+      console.log('[Navbar] Mobile toggle or menu not found:', { toggle: !!mobileToggle, menu: !!navMenu });
+      return;
+    }
+    
+    // Ensure navMenu has ID for CSS targeting
+    if (!navMenu.id) {
+      navMenu.id = 'navMenu';
+    }
+    
+    console.log('[Navbar] Initializing mobile menu...');
+    
+    // Remove any existing event listeners by cloning the button
+    const newToggle = mobileToggle.cloneNode(true);
+    mobileToggle.parentNode.replaceChild(newToggle, mobileToggle);
+    
+    // Toggle menu on button click - use newToggle now
+    newToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const hamburgerIcon = this.querySelector('.hamburger-icon');
+      const closeIcon = this.querySelector('.close-icon');
+      const isActive = navMenu.classList.contains('active');
+      
+      if (isActive) {
+        // Close menu
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed');
+      } else {
+        // Open menu
+        navMenu.classList.add('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'none', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'block', 'important');
+        document.body.style.overflow = 'hidden';
+        console.log('[Navbar] Menu opened');
+      }
+    });
+    
+    // Close menu when clicking nav links (but NOT dropdown toggles)
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        // Don't close if it's a dropdown child (unless it's a real navigation link)
+        if (this.getAttribute('href') === '#') return;
+        
+        const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+        const closeIcon = newToggle.querySelector('.close-icon');
+        
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed (link clicked)');
+      });
+    });
+    
+    // DROPDOWN MENU TOGGLE (for mobile and touch devices)
+    var dropdownToggles = navMenu.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var parent = this.closest('.nav-dropdown');
+        if (!parent) return;
+        
+        // Close other open dropdowns at the same level
+        var siblings = parent.parentNode.querySelectorAll('.nav-dropdown.open');
+        siblings.forEach(function(sib) {
+          if (sib !== parent) sib.classList.remove('open');
+        });
+        
+        parent.classList.toggle('open');
+        console.log('[Navbar] Dropdown toggled:', parent.classList.contains('open') ? 'open' : 'closed');
+      });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-dropdown')) {
+        var openDropdowns = document.querySelectorAll('.nav-dropdown.open');
+        openDropdowns.forEach(function(dd) { dd.classList.remove('open'); });
+      }
+    });
+    
+    console.log('[Navbar] Dropdown handlers initialized for ' + dropdownToggles.length + ' dropdowns');
+    
+    // Phone button functionality (phoneBtn already declared at top of function)
+    if (phoneBtn) {
+      phoneBtn.addEventListener('click', function() {
+        // Get phone number from placeholder in page or use default
+        const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+        const phoneNumber = phoneLinks.length > 0 
+          ? phoneLinks[0].getAttribute('href').replace('tel:', '')
+          : '[business_phone]';
+        
+        window.location.href = 'tel:' + phoneNumber;
+        console.log('[Navbar] Phone button clicked');
+      });
+    }
+    
+    console.log('[Navbar] Mobile menu initialized successfully');
+    
+    // === WHATSAPP BUTTON VISIBILITY FIX ===
+    // Ensure WhatsApp floating button is hidden on desktop and visible on mobile
+    // IMPORTANT: Only target the floating button by its class, NOT generic wa.me links
+    const handleWhatsAppVisibility = function() {
+      const whatsappBtn = document.querySelector('.whatsapp-float');
+      if (whatsappBtn) {
+        const isDesktop = window.innerWidth >= 769;
+        if (isDesktop) {
+          whatsappBtn.style.setProperty('display', 'none', 'important');
+          whatsappBtn.style.setProperty('visibility', 'hidden', 'important');
+          whatsappBtn.style.setProperty('opacity', '0', 'important');
+          whatsappBtn.style.setProperty('pointer-events', 'none', 'important');
+          console.log('[WhatsApp] Button hidden on desktop');
+        } else {
+          whatsappBtn.style.removeProperty('display');
+          whatsappBtn.style.removeProperty('visibility');
+          whatsappBtn.style.removeProperty('opacity');
+          whatsappBtn.style.removeProperty('pointer-events');
+          console.log('[WhatsApp] Button visible on mobile');
+        }
+      }
+    };
+    
+    // Run on load
+    handleWhatsAppVisibility();
+    
+    // Run on resize with debouncing
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleWhatsAppVisibility, 100);
+    });
+  });
+})();
+
+</script>
+  
+  <main>
+    <section class="archive-access-overview-section" data-layout-spec="גישה לארכיון-overview" dir="rtl">
+  <div class="archive-overview-container">
+
+    <!-- Header Block -->
+    <div class="archive-overview-header">
+      <span class="archive-overview-label">ארכיון הצילומים</span>
+      <div class="archive-label-rule" aria-hidden="true"></div>
+      <h1 class="archive-overview-h1">צפייה באוסף התמונות<br>לפי תאריך הצילום</h1>
+      <p class="archive-overview-intro">לאחר כל צילום, התמונות עוברות עריכה מקצועית ומפורסמות בארכיון לפי תאריך. ניתן לצפות בתמונות בסביבת תצוגה מוגנת ומוקפדת — הורדת הקבצים מתאפשרת אך ורק לאחר אישור ותשלום. כך אנחנו שומרים על איכות העבודה ומבטיחים שכל תמונה תגיע אליכם בצורה הנכונה.</p>
+    </div>
+
+    <!-- Visual Strip: 4 Archive Stage Cards -->
+    <div class="archive-stages-strip">
+
+      <!-- Stage 1 -->
+      <article class="archive-stage-card">
+        <div class="stage-number">01</div>
+        <div class="stage-icon-wrap" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="6" width="24" height="22" rx="0" stroke="currentColor" stroke-width="1.2"></rect>
+            <path d="M4 12H28" stroke="currentColor" stroke-width="1.2"></path>
+            <path d="M10 4V8M22 4V8" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"></path>
+            <rect x="9" y="17" width="5" height="5" rx="0" fill="currentColor" opacity="0.35"></rect>
+          </svg>
+        </div>
+        <div class="stage-content">
+          <h3 class="stage-title">בחירת תאריך הצילום</h3>
+          <p class="stage-desc">בחרו את תאריך הצילום שלכם מהרשימה כדי לגשת לאוסף התמונות המתאים.</p>
+        </div>
+      </article>
+
+      <!-- Stage 2 -->
+      <article class="archive-stage-card">
+        <div class="stage-number">02</div>
+        <div class="stage-icon-wrap" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="5" width="26" height="20" rx="0" stroke="currentColor" stroke-width="1.2"></rect>
+            <circle cx="16" cy="15" r="5" stroke="currentColor" stroke-width="1.2"></circle>
+            <circle cx="16" cy="15" r="2" fill="currentColor" opacity="0.35"></circle>
+            <path d="M3 5L8 10M29 5L24 10" stroke="currentColor" stroke-width="1" opacity="0.5"></path>
+          </svg>
+        </div>
+        <div class="stage-content">
+          <h3 class="stage-title">תצוגה מקדימה מוגנת</h3>
+          <p class="stage-desc">ניתן לצפות בכל התמונות בפורמט תצוגה מוגן — ללא אפשרות הורדה או שמירה.</p>
+        </div>
+      </article>
+
+      <!-- Stage 3 -->
+      <article class="archive-stage-card">
+        <div class="stage-number">03</div>
+        <div class="stage-icon-wrap" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="12" width="20" height="16" rx="0" stroke="currentColor" stroke-width="1.2"></rect>
+            <path d="M11 12V9C11 6.24 13.24 4 16 4C18.76 4 21 6.24 21 9V12" stroke="currentColor" stroke-width="1.2"></path>
+            <circle cx="16" cy="20" r="2.5" fill="currentColor" opacity="0.4"></circle>
+            <path d="M16 22V25" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"></path>
+          </svg>
+        </div>
+        <div class="stage-content">
+          <h3 class="stage-title">אישור ותשלום</h3>
+          <p class="stage-desc">לאחר בחירת התמונות הרצויות, מתבצע תהליך אישור ותשלום מאובטח לשחרור הקבצים.</p>
+        </div>
+      </article>
+
+      <!-- Stage 4 -->
+      <article class="archive-stage-card">
+        <div class="stage-number">04</div>
+        <div class="stage-icon-wrap" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 4V22M16 22L10 16M16 22L22 16" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="miter"></path>
+            <path d="M6 26H26" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"></path>
+            <rect x="6" y="24" width="20" height="4" rx="0" fill="currentColor" opacity="0.1"></rect>
+          </svg>
+        </div>
+        <div class="stage-content">
+          <h3 class="stage-title">שחרור הקבצים</h3>
+          <p class="stage-desc">לאחר השלמת התשלום, קבצי התמונות המקוריים בעריכה מלאה זמינים להורדה מיידית.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Visual Image Strip -->
+    <figure class="archive-overview-image-wrap">
+      <img data-placeholder="archive-access-overview-image-1" data-context="A refined editorial photography archive scene: an elegant light-filled studio desk with printed photos arranged by date, a softly open leather-bound album, a few loose edited prints fanned across warm cream paper, and a small handwritten date label. Warm natural light, archival paper textures, minimal and luxurious atmosphere. Color palette: warm off-white, champagne, graphite. Top-down or slight angle perspective. No people." width="1100" height="340" src="/assets/site-archive-access-overview-image-1.webp" alt="ארכיון תמונות מסודר לפי תאריכי צילום על שולחן סטודיו מואר">
+      <div class="archive-image-overlay" aria-hidden="true"></div>
+    </figure>
+
+  </div>
+
+  <!-- Bottom stepped-paper divider -->
+  <div class="archive-overview-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1440 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,56 L0,28 L60,22 L120,30 L180,18 L240,26 L300,14 L360,24 L420,20 L480,30 L540,16 L600,26 L660,22 L720,32 L780,18 L840,28 L900,20 L960,30 L1020,16 L1080,26 L1140,22 L1200,30 L1260,18 L1320,28 L1380,20 L1440,28 L1440,56 Z" fill="#FAF8F5"></path>
+    </svg>
+  </div>
+
+</section>
+
+<section class="archive-access-process-section" data-layout-spec="גישה לארכיון-process" dir="rtl">
+
+  <!-- Section Header -->
+  <div class="aap-container">
+    <div class="aap-header">
+      <span class="aap-overline">כיצד זה עובד</span>
+      <div class="aap-overline-rule" aria-hidden="true"></div>
+      <h2 class="aap-title">תהליך הגישה לארכיון</h2>
+      <p class="aap-subtitle">מרגע הצילום ועד למסירת התמונות — תהליך פשוט, מאובטח ומלוטש.</p>
+    </div>
+
+    <!-- Steps -->
+    <div class="aap-steps">
+
+      <!-- Step 1 -->
+      <article class="aap-step aap-step--text-start">
+        <div class="aap-step-content">
+          <div class="aap-step-meta">
+            <span class="aap-step-number">01</span>
+            <div class="aap-step-rule" aria-hidden="true"></div>
+          </div>
+          <h3 class="aap-step-title">העלאת קולקציה ערוכה</h3>
+          <p class="aap-step-desc">לאחר כל צילום, אלונה עורכת את התמונות בקפידה ומעלה את הקולקציה המוגמרת לארכיון — ממויינת לפי תאריך הצילום. כל אוסף מוצג בסביבה נקייה ומוגנת, מוכן לצפייה.</p>
+        </div>
+        <figure class="aap-step-visual">
+          <img data-placeholder="archive-access-process-image-1" data-context="A photographer sitting at a clean white desk editing photos on a professional monitor, warm studio lighting, elegant workspace with film prints and a coffee cup, luxury editorial photography studio atmosphere" width="560" height="420" src="/assets/site-archive-access-process-image-1.webp" alt="צלמת עורכת תמונות בסטודיו">
+          <div class="aap-visual-accent" aria-hidden="true"></div>
+        </figure>
+      </article>
+
+      <!-- Step 2 -->
+      <article class="aap-step aap-step--text-end">
+        <figure class="aap-step-visual">
+          <img data-placeholder="archive-access-process-image-2" data-context="A person browsing a beautifully designed photo gallery on a laptop, soft natural light, elegant minimal interface showing date-sorted photography collections, warm cream tones, premium web experience" width="560" height="420" src="/assets/site-archive-access-process-image-2.webp" alt="צפייה בגלריה מקוונת">
+          <div class="aap-visual-accent" aria-hidden="true"></div>
+        </figure>
+        <div class="aap-step-content">
+          <div class="aap-step-meta">
+            <span class="aap-step-number">02</span>
+            <div class="aap-step-rule" aria-hidden="true"></div>
+          </div>
+          <h3 class="aap-step-title">צפייה בתמונות הנבחרות</h3>
+          <p class="aap-step-desc">המבקרים יכולים לגלוש בין הקולקציות לפי תאריך, לצפות בתמונות בתצוגה מוגנת ולבחור את האוספים שמעניינים אותם — ללא אפשרות הורדה או צילום מסך ללא אישור.</p>
+        </div>
+      </article>
+
+      <!-- Step 3 -->
+      <article class="aap-step aap-step--text-start">
+        <div class="aap-step-content">
+          <div class="aap-step-meta">
+            <span class="aap-step-number">03</span>
+            <div class="aap-step-rule" aria-hidden="true"></div>
+          </div>
+          <h3 class="aap-step-title">בקשת גישה ותשלום</h3>
+          <p class="aap-step-desc">מי שמעוניין לקבל את התמונות פונה ישירות לאלונה. לאחר תיאום ואישור התשלום, ניתנת גישה מלאה לקולקציה הנבחרת — בצורה אישית ומסודרת.</p>
+        </div>
+        <figure class="aap-step-visual">
+          <img data-placeholder="archive-access-process-image-3" data-context="A close-up of a person sending a message on a phone, clean minimal background, soft warm light, premium feel, elegant communication exchange, luxury photography business interaction" width="560" height="420" src="/assets/site-archive-access-process-image-3.webp" alt="תיאום גישה ותשלום">
+          <div class="aap-visual-accent" aria-hidden="true"></div>
+        </figure>
+      </article>
+
+      <!-- Step 4 -->
+      <article class="aap-step aap-step--text-end">
+        <figure class="aap-step-visual">
+          <img data-placeholder="archive-access-process-image-4" data-context="A beautiful high-resolution photograph being displayed on screen or printed, full quality delivery, elegant photography archive, warm editorial tones, luxury print studio aesthetic, final delivered images" width="560" height="420" src="/assets/site-archive-access-process-image-4.webp" alt="מסירת תמונות באיכות מלאה">
+          <div class="aap-visual-accent" aria-hidden="true"></div>
+        </figure>
+        <div class="aap-step-content">
+          <div class="aap-step-meta">
+            <span class="aap-step-number">04</span>
+            <div class="aap-step-rule" aria-hidden="true"></div>
+          </div>
+          <h3 class="aap-step-title">מסירת התמונות באיכות מלאה</h3>
+          <p class="aap-step-desc">לאחר אישור התשלום, התמונות המאושרות מועברות בפורמט מלא ובאיכות המקורית — ישירות לידיים שלך. כל תמונה מועברת כפי שנוצרה: ערוכה, מלוטשת, ומוכנה לשימוש.</p>
+        </div>
+      </article>
+
+    </div>
+    <!-- End Steps -->
+
+  </div>
+  <!-- End Container -->
+
+  <!-- Bottom Divider: thin plum rule with vertical ticks -->
+  <div class="aap-bottom-divider" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="20" x2="480" y2="20" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+      <line x1="490" y1="12" x2="490" y2="28" stroke="rgba(110,75,126,0.5)" stroke-width="1.5"></line>
+      <line x1="500" y1="16" x2="500" y2="24" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+      <line x1="510" y1="14" x2="510" y2="26" stroke="rgba(110,75,126,0.45)" stroke-width="1.5"></line>
+      <line x1="520" y1="18" x2="520" y2="22" stroke="rgba(110,75,126,0.3)" stroke-width="1"></line>
+      <line x1="530" y1="12" x2="530" y2="28" stroke="rgba(110,75,126,0.5)" stroke-width="1.5"></line>
+      <line x1="540" y1="16" x2="540" y2="24" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+      <line x1="550" y1="14" x2="550" y2="26" stroke="rgba(110,75,126,0.45)" stroke-width="1.5"></line>
+      <line x1="560" y1="18" x2="560" y2="22" stroke="rgba(110,75,126,0.3)" stroke-width="1"></line>
+      <line x1="570" y1="12" x2="570" y2="28" stroke="rgba(110,75,126,0.5)" stroke-width="1.5"></line>
+      <line x1="580" y1="16" x2="580" y2="24" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+      <line x1="590" y1="14" x2="590" y2="26" stroke="rgba(110,75,126,0.45)" stroke-width="1.5"></line>
+      <line x1="600" y1="18" x2="600" y2="22" stroke="rgba(110,75,126,0.3)" stroke-width="1"></line>
+      <line x1="610" y1="12" x2="610" y2="28" stroke="rgba(110,75,126,0.5)" stroke-width="1.5"></line>
+      <line x1="620" y1="16" x2="620" y2="24" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+      <line x1="630" y1="14" x2="630" y2="26" stroke="rgba(110,75,126,0.45)" stroke-width="1.5"></line>
+      <line x1="640" y1="18" x2="640" y2="22" stroke="rgba(110,75,126,0.3)" stroke-width="1"></line>
+      <line x1="650" y1="12" x2="650" y2="28" stroke="rgba(110,75,126,0.5)" stroke-width="1.5"></line>
+      <line x1="660" y1="16" x2="660" y2="24" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+      <line x1="670" y1="14" x2="670" y2="26" stroke="rgba(110,75,126,0.45)" stroke-width="1.5"></line>
+      <line x1="680" y1="18" x2="680" y2="22" stroke="rgba(110,75,126,0.3)" stroke-width="1"></line>
+      <line x1="690" y1="12" x2="690" y2="28" stroke="rgba(110,75,126,0.5)" stroke-width="1.5"></line>
+      <line x1="700" y1="16" x2="700" y2="24" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+      <line x1="710" y1="14" x2="710" y2="26" stroke="rgba(110,75,126,0.45)" stroke-width="1.5"></line>
+      <line x1="720" y1="20" x2="1200" y2="20" stroke="rgba(110,75,126,0.35)" stroke-width="1"></line>
+    </svg>
+  </div>
+
+</section>
+
+<section class="archive-access-protection-section" data-layout-spec="גישה לארכיון-protection" dir="rtl">
+  <!-- Grain overlay -->
+  <div class="aap-grain" aria-hidden="true"></div>
+
+  <div class="aap-container">
+    <!-- Text block: START (right in RTL) -->
+    <div class="aap-text-block">
+      <span class="aap-overline">הגנה על התמונות</span>
+      <div class="aap-rule" aria-hidden="true"></div>
+      <h2 class="aap-heading">התמונות שלך שמורות.<br>כל תמונה, כל רגע.</h2>
+      <p class="aap-body">האתר תוכנן להציג את התמונות שלי באלגנטיות מרבית — ובמקביל להבטיח שכל תמונה נשמרת בצורה מושלמת. הצפייה פתוחה לכם, אך הורדה, שמירה או שכפול ללא רישיון אינם אפשריים. כך אני מגנה על העבודה שלי ועל הרגעים שצילמתי עבורכם כצלמת מקצועית לאירועים בישראל.</p>
+    </div>
+
+    <!-- Mini panels: END (left in RTL) -->
+    <div class="aap-panels">
+
+      <!-- Panel 1: Watermark -->
+      <article class="aap-panel">
+        <div class="aap-panel-image-wrap">
+          <img data-placeholder="archive-access-protection-image-1" data-context="A refined editorial photograph showing a subtle semi-transparent watermark logo overlaid on a beautiful portrait photo, displayed on a dark luxury photography website. The watermark is tasteful and barely intrusive, symbolizing copyright protection. Warm champagne tones, deep graphite background, professional photography studio aesthetic." width="600" height="400" src="/assets/site-archive-access-protection-image-1.webp" alt="סימן מים עדין על תמונה מוגנת" class="aap-panel-img">
+          <div class="aap-panel-img-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="aap-panel-body">
+          <div class="aap-panel-icon" aria-hidden="true">
+            <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="10" stroke="currentColor" stroke-width="1.2"></circle>
+              <path d="M7 11.5C7 11.5 8.5 9 11 9C13.5 9 15 11.5 15 11.5C15 11.5 13.5 14 11 14C8.5 14 7 11.5 7 11.5Z" stroke="currentColor" stroke-width="1.2"></path>
+              <circle cx="11" cy="11.5" r="1.5" fill="currentColor"></circle>
+              <line x1="14.5" y1="7.5" x2="7.5" y2="14.5" stroke="currentColor" stroke-width="1.2"></line>
+            </svg>
+          </div>
+          <div class="aap-panel-content">
+            <h3 class="aap-panel-title">סימון בלתי נראה</h3>
+            <p class="aap-panel-text">כל תמונה מוצגת עם סימן מים עדין המשמר את זכויות היוצרים מבלי לפגוע בחוויית הצפייה.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Panel 2: Preview only -->
+      <article class="aap-panel">
+        <div class="aap-panel-image-wrap">
+          <img data-placeholder="archive-access-protection-image-2" data-context="A luxury photography gallery website interface showing images displayed at reduced preview resolution with a blurred or low-quality preview effect, indicating that full resolution is only available after purchase. Dark elegant background, champagne gold accents, editorial photography archive aesthetic, Hebrew text interface." width="600" height="400" src="/assets/site-archive-access-protection-image-2.webp" alt="תצוגה מקדימה בלבד — רזולוציה מוגבלת" class="aap-panel-img">
+          <div class="aap-panel-img-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="aap-panel-body">
+          <div class="aap-panel-icon" aria-hidden="true">
+            <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="4" width="18" height="14" rx="1" stroke="currentColor" stroke-width="1.2"></rect>
+              <path d="M2 8h18" stroke="currentColor" stroke-width="1.2"></path>
+              <path d="M6 12h4M6 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path>
+              <path d="M14 11l2 2-2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="aap-panel-content">
+            <h3 class="aap-panel-title">צפייה בלבד</h3>
+            <p class="aap-panel-text">התמונות מוצגות ברזולוציית תצוגה בלבד. קבצי המקור המלאים זמינים אך ורק לאחר רכישת גישה.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Panel 3: Controlled release -->
+      <article class="aap-panel">
+        <div class="aap-panel-image-wrap">
+          <img data-placeholder="archive-access-protection-image-3" data-context="An elegant locked or restricted access visual for a photography archive website — a beautiful photo collection behind a subtle lock or key icon overlay, representing controlled and paid access to photo galleries. Dark sophisticated background, warm champagne gold tones, luxury editorial photography archive feel, Israeli photography studio." width="600" height="400" src="/assets/site-archive-access-protection-image-3.webp" alt="שחרור מבוקר — גישה בתשלום בלבד" class="aap-panel-img">
+          <div class="aap-panel-img-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="aap-panel-body">
+          <div class="aap-panel-icon" aria-hidden="true">
+            <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="10" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2"></rect>
+              <path d="M8 10V7a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path>
+              <circle cx="11" cy="14.5" r="1.2" fill="currentColor"></circle>
+            </svg>
+          </div>
+          <div class="aap-panel-content">
+            <h3 class="aap-panel-title">גישה מבוקרת</h3>
+            <p class="aap-panel-text">הורדת קבצים מאובטחת בתהליך רכישה פשוט. ללא תשלום — אין גישה לקבצים, ואין אפשרות לשמור או לשתף.</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- Bottom divider: torn edge warm white -->
+  <div class="aap-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,72 L0,38 Q36,30 72,36 T144,32 Q180,38 216,30 T288,34 Q324,38 360,30 T432,36 Q468,32 504,38 T576,30 Q612,36 648,32 T720,38 Q756,30 792,36 T864,32 Q900,38 936,30 T1008,36 Q1044,32 1080,38 T1152,30 Q1188,36 1224,32 T1296,38 Q1332,30 1368,36 T1440,32 L1440,72 Z" fill="#FAF8F5"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="archive-access-reassurance-section" data-layout-spec="גישה לארכיון-reassurance" dir="rtl">
+  <div class="aar-container">
+
+    <!-- Section Header -->
+    <div class="aar-header">
+      <span class="aar-overline">שאלות נפוצות</span>
+      <div class="aar-overline-rule" aria-hidden="true"></div>
+      <h2 class="aar-title">כל מה שחשוב לדעת לפני הכניסה לארכיון</h2>
+      <p class="aar-subtitle">שקיפות מלאה, תמונות מוגנות, ומסירה מקצועית — כך עובד התהליך אצלי</p>
+    </div>
+
+    <!-- Three Cards -->
+    <div class="aar-cards-grid">
+
+      <!-- Card 1: Dates -->
+      <article class="aar-card">
+        <div class="aar-card-icon" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"></circle>
+          </svg>
+        </div>
+        <div class="aar-card-accent-line" aria-hidden="true"></div>
+        <h3 class="aar-card-title">ארגון לפי תאריך צילום</h3>
+        <p class="aar-card-text">כל אלבום בארכיון מסודר לפי תאריך הצילום המדויק. כך תוכלו למצוא בקלות את הסשן שלכם, לדפדף בתמונות שצולמתם, ולראות את כל הגלריה בסדר כרונולוגי ברור ומסודר.</p>
+      </article>
+
+      <!-- Card 2: Privacy -->
+      <article class="aar-card">
+        <div class="aar-card-icon" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C18.25 22.15 22 17.25 22 12V7L12 2z"></path>
+            <polyline points="9 12 11 14 15 10"></polyline>
+          </svg>
+        </div>
+        <div class="aar-card-accent-line" aria-hidden="true"></div>
+        <h3 class="aar-card-title">גלריה פרטית ומוגנת</h3>
+        <p class="aar-card-text">התמונות בארכיון מוצגות לצפייה בלבד — לא ניתן להוריד אותן או לצלם אותן ללא תשלום. כל תמונה עוברת עריכה מקצועית לפני הפרסום, ומוגנת כדי לשמור על איכות העבודה ועל זכויות היוצרים.</p>
+      </article>
+
+      <!-- Card 3: Delivery -->
+      <article class="aar-card">
+        <div class="aar-card-icon" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            <line x1="9" y1="10" x2="15" y2="10"></line>
+            <line x1="9" y1="14" x2="13" y2="14"></line>
+          </svg>
+        </div>
+        <div class="aar-card-accent-line" aria-hidden="true"></div>
+        <h3 class="aar-card-title">מסירה מקצועית של הקבצים</h3>
+        <p class="aar-card-text">לאחר הרכישה תקבלו את התמונות בקבצים מעובדים ובאיכות גבוהה, מוכנות להדפסה ולשימוש. כל צלמת מקצועית לאירועים בישראל מתחייבת לרמת גימור עקבית — ואצלי זה לא שונה.</p>
+      </article>
+
+    </div>
+
+    <!-- Bottom Note -->
+    <div class="aar-note">
+      <span class="aar-note-ornament" aria-hidden="true">✦</span>
+      <p class="aar-note-text">פרטי התמחור ותנאי שחרור התמונות מותאמים אישית לכל סשן וצורך — מוזמנים לפנות אליי ישירות לכל שאלה.</p>
+    </div>
+
+  </div>
+</section>
+  </main>
+  
+  <footer class="site-footer" dir="rtl">
+  <div class="footer-inner">
+    <div class="footer-top">
+
+      <!-- Column 1: Company Info -->
+      <div class="footer-col footer-brand">
+        <div class="footer-logo-wrap">
+          <img src="/assets/alona-photo-general-logo.webp" alt="ALONA PHOTO" class="logo">
+        </div>
+        <p class="footer-tagline">ארכיון צילום מוגן — אוספים ערוכים לפי תאריך צילום, בסביבה פרימיום ומעוצבת.</p>
+        <div class="footer-social">
+          <a href="[facebook_handle]" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="[instagram_handle]" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="[whatsapp_handle]" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+
+      <!-- Column 2: Quick Links -->
+      <div class="footer-col footer-nav">
+        <h4 class="footer-heading">ניווט מהיר</h4>
+        <div class="footer-heading-line"></div>
+        <ul class="footer-links">
+          <li><a href="/archive-access">גישה לארכיון</a></li>
+          <li><a href="/portfolio">תיק עבודות</a></li>
+          <li><a href="/contact">צור קשר</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Contact Info -->
+      <div class="footer-col footer-contact-col">
+        <h4 class="footer-heading">יצירת קשר</h4>
+        <div class="footer-heading-line"></div>
+        <ul class="footer-contact">
+          <li>
+            <span class="contact-icon"><i class="fas fa-envelope"></i></span>
+            <span class="contact-text"><a href="mailto:[business_email]">[business_email]</a></span>
+          </li>
+          <li>
+            <span class="contact-icon"><i class="fas fa-phone"></i></span>
+            <span class="contact-text"><a href="tel:[business_phone]">[business_phone]</a></span>
+          </li>
+          <li><a href="/"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span>
+            <span class="contact-text">[business_address]</span></a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Archive Access CTA -->
+      <div class="footer-col footer-cta-col">
+        <h4 class="footer-heading">הארכיון שלי</h4>
+        <div class="footer-heading-line"></div>
+        <p class="footer-cta-text">גישה לאוספי הצילום המוגנים שלי — תמונות ערוכות בקפידה, זמינות למנויים.</p>
+        <a href="/archive-access" class="footer-cta-btn">כניסה לארכיון</a>
+      </div>
+
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-line"></div>
+      <div class="footer-bottom-inner">
+        <p class="footer-copy">© 2026 ALONA PHOTO. כל הזכויות שמורות.</p>
+        <div class="footer-legal">
+          <a href="/privacy">מדיניות פרטיות</a>
+          <span class="footer-sep">·</span>
+          <a href="/terms">תנאי שימוש</a><span class="separator">|</span>
+            <a href="/return-policy" aria-label="מדיניות החזרות">
+              מדיניות החזרות
+            </a>
+          <span class="footer-sep">·</span>
+          <a href="/accessibility">נגישות</a>
+          <span class="footer-sep">·</span>
+          <a href="https://zappy5.com" target="_blank" class="zappy-attribution">נוצר באמצעות Zappy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+  <a href="https://wa.me/[whatsapp_handle]" class="whatsapp-float" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  
+  <div data-integration="accessibility:toolbar"></div>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+
+    <script id="zappy-mobile-lang-menu-script">
+    (function() {
+      function initMobileLangMenu() {
+        if (window.innerWidth > 768) {
+          var existingMenu = document.querySelector('.mobile-lang-menu');
+          if (existingMenu) existingMenu.remove();
+          return;
+        }
+        if (document.querySelector('.mobile-lang-menu')) return;
+        var switcher = document.querySelector('.lang-switcher');
+        if (!switcher) return;
+        var dropdown = switcher.querySelector('.lang-switcher-dropdown');
+        if (!dropdown) return;
+        var options = dropdown.querySelectorAll('.lang-option');
+        if (options.length === 0) return;
+        var navMenu = document.getElementById('navMenu') || document.querySelector('.nav-menu') || document.querySelector('nav ul');
+        if (!navMenu) return;
+        var currentLang = document.documentElement.lang || 'en';
+        var langConfigs = {
+          he: {name:'עברית',flag:'https://api.iconify.design/circle-flags/il.svg'},
+          en: {name:'English',flag:'https://api.iconify.design/circle-flags/us.svg'},
+          ar: {name:'العربية',flag:'https://api.iconify.design/circle-flags/sa.svg'},
+          fr: {name:'Français',flag:'https://api.iconify.design/circle-flags/fr.svg'},
+          es: {name:'Español',flag:'https://api.iconify.design/circle-flags/es.svg'},
+          de: {name:'Deutsch',flag:'https://api.iconify.design/circle-flags/de.svg'},
+          ru: {name:'Русский',flag:'https://api.iconify.design/circle-flags/ru.svg'},
+          zh: {name:'中文',flag:'https://api.iconify.design/circle-flags/cn.svg'},
+          ja: {name:'日本語',flag:'https://api.iconify.design/circle-flags/jp.svg'},
+          pt: {name:'Português',flag:'https://api.iconify.design/circle-flags/br.svg'},
+          it: {name:'Italiano',flag:'https://api.iconify.design/circle-flags/it.svg'},
+          ko: {name:'한국어',flag:'https://api.iconify.design/circle-flags/kr.svg'}
+        };
+        var container = document.createElement('div');
+        container.className = 'mobile-lang-menu';
+        var currentConfig = langConfigs[currentLang] || {name:currentLang,flag:''};
+        var toggleBtn = document.createElement('button');
+        toggleBtn.className = 'mobile-lang-toggle';
+        toggleBtn.type = 'button';
+        var currentFlagHtml = currentConfig.flag ? '<img src="' + currentConfig.flag + '" width="20" height="20" alt="" style="border-radius:50%;margin-right:8px;margin-left:8px;">' : '';
+        toggleBtn.innerHTML = currentFlagHtml + currentConfig.name;
+        container.appendChild(toggleBtn);
+        var optionsDiv = document.createElement('div');
+        optionsDiv.className = 'mobile-lang-options';
+        var currentLink = document.createElement('a');
+        currentLink.className = 'mobile-lang-option active';
+        currentLink.href = '#';
+        currentLink.innerHTML = currentFlagHtml + currentConfig.name;
+        optionsDiv.appendChild(currentLink);
+        options.forEach(function(opt) {
+          var link = document.createElement('a');
+          link.className = 'mobile-lang-option';
+          link.href = opt.getAttribute('href');
+          link.innerHTML = opt.innerHTML;
+          optionsDiv.appendChild(link);
+        });
+        container.appendChild(optionsDiv);
+        navMenu.appendChild(container);
+        toggleBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleBtn.classList.toggle('expanded');
+          optionsDiv.classList.toggle('expanded');
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileLangMenu); }
+      else { initMobileLangMenu(); }
+      window.addEventListener('resize', function() { clearTimeout(window._mlrt); window._mlrt = setTimeout(initMobileLangMenu, 250); });
+    })();
+    </script>
+</body>
+</html>
